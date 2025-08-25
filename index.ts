@@ -1,5 +1,7 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 import path from 'path'
+import adminRoutes from './routes/admin/index.route'
+import clientRoutes from './routes/client/index.route'
 
 const app = express()
 const port = 3000
@@ -9,17 +11,9 @@ app.set('view engine', 'pug')
 
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.get('/', (req: Request, res: Response) => {
-  res.render('client/pages/home', {
-    pageTitle: 'Home'
-  })
-})
+app.use('/admin', adminRoutes)
 
-app.get('/admin/dashboard', (req: Request, res: Response) => {
-  res.render('admin/pages/dashboard', {
-    pageTitle: 'Dashboard'
-  })
-})
+app.use('/', clientRoutes)
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
