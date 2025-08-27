@@ -1,3 +1,35 @@
+// Create an instance of Notyf
+var notyf = new Notyf({
+  duration: 3000,
+  position: {
+    x: 'right',
+    y: 'top'
+  },
+  dismissible: true
+})
+
+const notifyData = sessionStorage.getItem('notify')
+if (notifyData) {
+  const { type, message } = JSON.parse(notifyData)
+
+  if (type == 'error') {
+    notyf.error(message)
+  } else if (type == 'success') {
+    notyf.success(message)
+  }
+  sessionStorage.removeItem('notify')
+}
+
+const saveNotifyToSessionStorage = (type, message) => {
+  sessionStorage.setItem(
+    'notify',
+    JSON.stringify({
+      type: type,
+      message: message
+    })
+  )
+}
+
 // articleCreateCategoryForm
 const articleCreateCategoryForm = document.querySelector('#articleCreateCategoryForm')
 if (articleCreateCategoryForm) {
@@ -27,7 +59,15 @@ if (articleCreateCategoryForm) {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
+          if (data.code == 'error') {
+            notyf.error(data.message)
+          }
+
+          if (data.code == 'success') {
+            // notyf.success(data.message)
+            saveNotifyToSessionStorage(data.code, data.message)
+            location.reload()
+          }
         })
     })
 }
